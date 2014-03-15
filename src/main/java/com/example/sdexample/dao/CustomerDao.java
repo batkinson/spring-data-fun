@@ -4,12 +4,10 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 import com.example.sdexample.domain.Customer;
 import com.example.sdexample.domain.Product;
 
-@RepositoryRestResource
 public interface CustomerDao extends JpaRepository<Customer, Long> {
 
 	public Customer findByFirstNameAndLastName(String firstName, String lastName);
