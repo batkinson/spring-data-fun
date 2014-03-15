@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -18,7 +19,6 @@ import com.example.sdexample.domain.Order;
 import com.example.sdexample.domain.Product;
 
 @Controller
-@RequestMapping("/")
 public class SimpleController {
 
 	private CustomerDao customerDao;
@@ -33,8 +33,8 @@ public class SimpleController {
 		this.orderDao = orderDao;
 	}
 
-	@RequestMapping(method = RequestMethod.GET)
-	public void doIt(HttpServletResponse rsp) throws IOException {
+	@RequestMapping(value = "/", method = RequestMethod.GET)
+	public void summary(HttpServletResponse rsp) throws IOException {
 
 		Writer out = rsp.getWriter();
 
@@ -56,6 +56,32 @@ public class SimpleController {
 		out.write("------\n");
 		for (Order o : orderDao.findAll()) {
 			out.write(o.toString());
+			out.write("\n");
+		}
+	}
+
+	@RequestMapping(value = "/customer/{lastName}/{firstName}", method = RequestMethod.GET)
+	public void customer(@PathVariable("firstName") String firstName,
+			@PathVariable("lastName") String lastName, HttpServletResponse rsp)
+			throws IOException {
+
+		Customer c = customerDao
+				.findByFirstNameAndLastName(firstName, lastName);
+
+		if (c == null) {
+			rsp.sendError(HttpServletResponse.SC_NOT_FOUND);
+			return;
+		}
+
+		Writer out = rsp.getWriter();
+
+		out.write(c.toString());
+		out.write("\n");
+
+		out.write("\nYou Bought\n");
+		out.write("-----------\n");
+		for (Product p : productDao.findProductsOrderedByCustomer(c)) {
+			out.write(p.toString());
 			out.write("\n");
 		}
 	}

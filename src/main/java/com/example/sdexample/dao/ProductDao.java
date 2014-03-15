@@ -10,6 +10,6 @@ import com.example.sdexample.domain.Product;
 
 public interface ProductDao extends JpaRepository<Product, Long> {
 
-	@Query("select p from Order o join o.orderedItems as p where o.orderedBy = :customer")
+	@Query("select distinct p from Order o join o.orderedItems as p where o.orderedBy = ?")
 	List<Product> findProductsOrderedByCustomer(Customer customer);
 }
