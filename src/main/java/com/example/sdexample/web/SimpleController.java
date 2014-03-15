@@ -19,6 +19,7 @@ import com.example.sdexample.domain.Order;
 import com.example.sdexample.domain.Product;
 
 @Controller
+@RequestMapping(value = "/")
 public class SimpleController {
 
 	private CustomerDao customerDao;
@@ -33,7 +34,7 @@ public class SimpleController {
 		this.orderDao = orderDao;
 	}
 
-	@RequestMapping(value = "/", method = RequestMethod.GET)
+	@RequestMapping(value = "/summary", method = RequestMethod.GET)
 	public void summary(HttpServletResponse rsp) throws IOException {
 
 		Writer out = rsp.getWriter();
@@ -60,27 +61,18 @@ public class SimpleController {
 		}
 	}
 
-	@RequestMapping(value = "/customer/{lastName}/{firstName}", method = RequestMethod.GET)
-	public void customer(@PathVariable("firstName") String firstName,
-			@PathVariable("lastName") String lastName, HttpServletResponse rsp)
-			throws IOException {
-
-		Customer c = customerDao
-				.findByFirstNameAndLastName(firstName, lastName);
-
-		if (c == null) {
-			rsp.sendError(HttpServletResponse.SC_NOT_FOUND);
-			return;
-		}
+	@RequestMapping(value = "/customer/{id}", method = RequestMethod.GET)
+	public void customer(@PathVariable("id") Customer customer,
+			HttpServletResponse rsp) throws IOException {
 
 		Writer out = rsp.getWriter();
 
-		out.write(c.toString());
+		out.write(customer.toString());
 		out.write("\n");
 
 		out.write("\nYou Bought\n");
 		out.write("-----------\n");
-		for (Product p : productDao.findProductsOrderedByCustomer(c)) {
+		for (Product p : productDao.findProductsOrderedByCustomer(customer)) {
 			out.write(p.toString());
 			out.write("\n");
 		}
