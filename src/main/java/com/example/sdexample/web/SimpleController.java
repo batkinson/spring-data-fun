@@ -34,7 +34,7 @@ public class SimpleController {
 		this.orderDao = orderDao;
 	}
 
-	@RequestMapping(value = "/summary", method = RequestMethod.GET)
+	@RequestMapping(method = RequestMethod.GET)
 	public void summary(HttpServletResponse rsp) throws IOException {
 
 		Writer out = rsp.getWriter();
@@ -61,20 +61,72 @@ public class SimpleController {
 		}
 	}
 
-	@RequestMapping(value = "/customer/{id}", method = RequestMethod.GET)
+	@RequestMapping(value = "/customers/{id}", method = RequestMethod.GET)
 	public void customer(@PathVariable("id") Customer customer,
 			HttpServletResponse rsp) throws IOException {
+
+		if (customer == null) {
+			rsp.sendError(HttpServletResponse.SC_NOT_FOUND);
+			return;
+		}
 
 		Writer out = rsp.getWriter();
 
 		out.write(customer.toString());
 		out.write("\n");
 
-		out.write("\nYou Bought\n");
-		out.write("-----------\n");
+		out.write("\nItems Bought\n");
+		out.write("------------\n");
 		for (Product p : productDao.findProductsOrderedByCustomer(customer)) {
 			out.write(p.toString());
 			out.write("\n");
 		}
 	}
+
+	@RequestMapping(value = "/products/{id}", method = RequestMethod.GET)
+	public void product(@PathVariable("id") Product product,
+			HttpServletResponse rsp) throws IOException {
+
+		if (product == null) {
+			rsp.sendError(HttpServletResponse.SC_NOT_FOUND);
+			return;
+		}
+
+		Writer out = rsp.getWriter();
+
+		out.write(product.toString());
+		out.write("\n");
+
+		out.write("\nWho Bought\n");
+		out.write("----------\n");
+		for (Customer c : customerDao.findCustomersWhoPurchasedProduct(product)) {
+			out.write(c.toString());
+			out.write("\n");
+		}
+	}
+
+	@RequestMapping(value = "/orders/{id}", method = RequestMethod.GET)
+	public void order(@PathVariable("id") Order order, HttpServletResponse rsp)
+			throws IOException {
+
+		if (order == null) {
+			rsp.sendError(HttpServletResponse.SC_NOT_FOUND);
+			return;
+		}
+
+		Writer out = rsp.getWriter();
+
+		out.write(order.toString());
+		out.write("\n");
+
+		out.write("\nOther Orders\n");
+		out.write("------------\n");
+		for (Order o : orderDao.findByOrderedBy(order.getOrderedBy())) {
+			if (o.getId().equals(order.getId()))
+				continue;
+			out.write(o.toString());
+			out.write("\n");
+		}
+	}
+
 }
