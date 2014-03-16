@@ -14,11 +14,23 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.hibernate.search.annotations.Analyze;
+import org.hibernate.search.annotations.DateBridge;
+import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.Index;
+import org.hibernate.search.annotations.Indexed;
+import org.hibernate.search.annotations.IndexedEmbedded;
+import org.hibernate.search.annotations.Resolution;
+import org.hibernate.search.annotations.Store;
+
 @Entity
+@Indexed
 @Table(name = "\"order\"")
 public class Order {
 
 	private Long id;
+	@Field(index = Index.YES, analyze = Analyze.YES, store = Store.NO)
+	@DateBridge(resolution = Resolution.DAY)
 	private Date orderedOn;
 	private Customer orderedBy;
 	private Set<Product> orderedItems;
@@ -41,6 +53,7 @@ public class Order {
 		this.orderedOn = orderedOn;
 	}
 
+	@IndexedEmbedded
 	@ManyToOne
 	public Customer getOrderedBy() {
 		return orderedBy;
@@ -50,6 +63,7 @@ public class Order {
 		this.orderedBy = orderedBy;
 	}
 
+	@IndexedEmbedded
 	@OneToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "order_product", joinColumns = @JoinColumn(name = "order_id"), inverseJoinColumns = @JoinColumn(name = "product_id"))
 	public Set<Product> getOrderedItems() {

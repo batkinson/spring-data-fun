@@ -8,11 +8,20 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
+import org.hibernate.search.annotations.Analyze;
+import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.Index;
+import org.hibernate.search.annotations.Indexed;
+import org.hibernate.search.annotations.Store;
+
 @Entity
+@Indexed
 public class Customer {
 
 	private Long id;
+	@Field(index = Index.YES, analyze = Analyze.YES, store = Store.YES)
 	private String firstName;
+	@Field(index = Index.YES, analyze = Analyze.YES, store = Store.YES)
 	private String lastName;
 	private Set<Order> orders;
 

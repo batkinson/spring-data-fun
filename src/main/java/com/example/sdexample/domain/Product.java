@@ -7,10 +7,18 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import org.hibernate.search.annotations.Analyze;
+import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.Index;
+import org.hibernate.search.annotations.Indexed;
+import org.hibernate.search.annotations.Store;
+
 @Entity
+@Indexed
 public class Product {
 
 	private Long id;
+	@Field(index = Index.YES, analyze = Analyze.YES, store = Store.YES)
 	private String name;
 	private BigDecimal price;
 

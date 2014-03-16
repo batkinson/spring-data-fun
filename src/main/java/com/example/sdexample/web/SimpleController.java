@@ -61,6 +61,20 @@ public class SimpleController {
 		}
 	}
 
+	@RequestMapping(value = "/searchorders/{text}", method = RequestMethod.GET)
+	public void searchOrders(@PathVariable("text") String searchText,
+			HttpServletResponse rsp) throws IOException {
+
+		Writer out = rsp.getWriter();
+
+		out.write("\nOrders\n");
+		out.write("------\n");
+		for (Order o : orderDao.findByText(searchText)) {
+			out.write(o.toString());
+			out.write("\n");
+		}
+	}
+
 	@RequestMapping(value = "/customers/{id}", method = RequestMethod.GET)
 	public void customer(@PathVariable("id") Customer customer,
 			HttpServletResponse rsp) throws IOException {

@@ -11,6 +11,8 @@
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd
 		http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.2.xsd">
 
+	<context:property-placeholder />
+
 	<context:annotation-config />
 
 	<jdbc:embedded-database id="dataSource" type="DERBY">
@@ -31,11 +33,14 @@
 				<prop key="hibernate.show_sql">true</prop>
 				<prop key="hibernate.format_sql">true</prop>
 				<prop key="hibernate.ejb.naming_strategy">org.hibernate.cfg.ImprovedNamingStrategy</prop>
+				<prop key="hibernate.search.default.directory_provider">filesystem</prop>
+				<prop key="hibernate.search.default.indexBase">${java.io.tmpdir}/spring-data-lucene</prop>
 			</props>
 		</property>
 	</bean>
 
-	<jpa:repositories base-package="com.example.sdexample.dao" />
+	<jpa:repositories base-package="com.example.sdexample.dao"
+		repository-impl-postfix="SearchImpl" />
 
 	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
 		<property name="entityManagerFactory" ref="entityManagerFactory" />
@@ -61,5 +66,10 @@
 			</user-service>
 		</authentication-provider>
 	</authentication-manager>
+
+	<bean class="com.example.sdexample.search.IndexRebuilder"
+		init-method="rebuildIndex">
+		<constructor-arg ref="entityManagerFactory" />
+	</bean>
 
 </beans>
